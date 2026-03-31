@@ -2,11 +2,10 @@ import Link from "next/link";
 import { Github, Menu, Search } from "lucide-react";
 
 import { MarkdownRenderer } from "@/components/markdown-renderer";
-import { SidebarNav } from "@/components/sidebar-nav";
+import { SidebarPane } from "@/components/sidebar-pane";
 import { TableOfContents } from "@/components/table-of-contents";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
@@ -15,6 +14,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { SidebarSection, Tutorial } from "@/lib/content";
+import { formatTutorialCode } from "@/lib/tutorial-code";
 
 const topNavItems = [
   { label: "Showcase", href: "#" },
@@ -51,9 +51,11 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
                     Documentation
                   </SheetTitle>
                 </SheetHeader>
-                <div className="px-3 py-4">
-                  <SidebarNav currentSlug={tutorial.slug} sections={sections} />
-                </div>
+                <SidebarPane
+                  currentSlug={tutorial.slug}
+                  sections={sections}
+                  className="max-h-[calc(100vh-73px)]"
+                />
               </SheetContent>
             </Sheet>
 
@@ -126,17 +128,13 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-0 px-4 md:px-6 lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)_220px]">
         <aside className="hidden lg:block">
           <div className="sticky top-16 h-[calc(100vh-4rem)] border-r border-border">
-            <ScrollArea className="h-full px-4 py-6">
-              <div className="mb-6 space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                  {tutorial.sectionTitle}
-                </p>
-                <p className="text-sm leading-6 text-muted-foreground">
-                  浏览全部教程章节，按主题快速切换。
-                </p>
-              </div>
-              <SidebarNav currentSlug={tutorial.slug} sections={sections} />
-            </ScrollArea>
+            <SidebarPane
+              currentSlug={tutorial.slug}
+              sectionTitle={tutorial.sectionTitle}
+              sections={sections}
+              className="h-full px-4 py-5"
+              showSummary
+            />
           </div>
         </aside>
 
@@ -151,7 +149,7 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
                   variant="outline"
                   className="h-auto rounded-full border-border px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
                 >
-                  {tutorial.code}
+                  {formatTutorialCode(tutorial.code)}
                 </Badge>
               </div>
 
