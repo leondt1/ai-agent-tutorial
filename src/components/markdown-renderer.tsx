@@ -1,9 +1,28 @@
 import { isValidElement, type ComponentPropsWithoutRef, type ReactNode } from "react";
-import ReactMarkdown from "react-markdown";
+import { MarkdownAsync } from "react-markdown";
+import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 
+import {
+  TypographyBlockquote,
+  TypographyH2,
+  TypographyH3,
+  TypographyInlineCode,
+  TypographyOl,
+  TypographyP,
+  TypographyUl,
+} from "@/components/ui/typography";
 import { createHeadingIdFactory } from "@/lib/markdown";
 import { cn } from "@/lib/utils";
+
+const prettyCodeOptions = {
+  theme: {
+    light: "github-light",
+    dark: "github-dark-dimmed",
+  },
+  keepBackground: false,
+  defaultLang: "plaintext",
+};
 
 function getTextContent(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") {
@@ -21,7 +40,7 @@ function getTextContent(node: ReactNode): string {
   return "";
 }
 
-export function MarkdownRenderer({ content }: { content: string }) {
+export async function MarkdownRenderer({ content }: { content: string }) {
   const createHeadingId = createHeadingIdFactory();
 
   const renderHeading = (level: 2 | 3, displayName: string) => {
@@ -33,15 +52,13 @@ export function MarkdownRenderer({ content }: { content: string }) {
       children?: ReactNode;
     }) => {
       const id = createHeadingId(getTextContent(children));
-      const Tag = level === 2 ? "h2" : "h3";
+      const Tag = level === 2 ? TypographyH2 : TypographyH3;
 
       return (
         <Tag
           id={id}
           className={cn(
-            level === 2
-              ? "group mt-16 scroll-mt-24 border-t border-border pt-10 text-3xl font-semibold tracking-[-0.02em] text-foreground first:mt-0 first:border-t-0 first:pt-0"
-              : "group mt-10 scroll-mt-24 text-xl font-semibold tracking-[-0.02em] text-foreground",
+            "group scroll-mt-24",
             className
           )}
           {...props}
@@ -69,51 +86,28 @@ export function MarkdownRenderer({ content }: { content: string }) {
 
   return (
     <div className="docs-prose">
-      <ReactMarkdown
+      <MarkdownAsync
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={[[rehypePrettyCode, prettyCodeOptions]]}
         components={{
           h2: HeadingTwo,
           h3: HeadingThree,
           p: ({ className, ...props }) => (
-            <p
-              className={cn(
-                "my-6 text-[1.0625rem] leading-8 text-foreground/80",
-                className
-              )}
-              {...props}
-            />
+            <TypographyP className={className} {...props} />
           ),
           ul: ({ className, ...props }) => (
-            <ul
-              className={cn(
-                "my-6 space-y-3 pl-6 text-[1.02rem] leading-8 text-foreground/80 marker:text-muted-foreground",
-                className
-              )}
-              {...props}
-            />
+            <TypographyUl className={className} {...props} />
           ),
           ol: ({ className, ...props }) => (
-            <ol
-              className={cn(
-                "my-6 space-y-3 pl-6 text-[1.02rem] leading-8 text-foreground/80 marker:font-semibold marker:text-muted-foreground",
-                className
-              )}
-              {...props}
-            />
+            <TypographyOl className={className} {...props} />
           ),
           blockquote: ({ className, ...props }) => (
-            <blockquote
-              className={cn(
-                "my-8 border-l border-border pl-5 text-[1.02rem] text-foreground/75",
-                className
-              )}
-              {...props}
-            />
+            <TypographyBlockquote className={className} {...props} />
           ),
           a: ({ className, href, ...props }) => (
             <a
               className={cn(
-                "font-medium text-primary decoration-primary/35 underline-offset-4 transition-colors hover:text-primary hover:underline",
+                "font-medium text-primary decoration-primary/35 underline underline-offset-4 transition-colors hover:text-primary/90",
                 className
               )}
               href={href}
@@ -125,38 +119,60 @@ export function MarkdownRenderer({ content }: { content: string }) {
           pre: ({ className, ...props }) => (
             <pre
               className={cn(
-                "my-8 overflow-x-auto rounded-2xl border border-border bg-[#fafafa] p-4 text-[0.95rem] leading-7 text-foreground shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
+                "my-8 overflow-x-auto rounded-2xl border border-border/90 bg-[#fafafa] px-4 py-3.5 text-[0.94rem] leading-7 text-foreground shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
                 className
               )}
               {...props}
             />
           ),
           code: ({ className, children, ...props }) => {
-            const code = String(children).replace(/\n$/, "");
-            const isBlock = Boolean(className) || code.includes("\n");
+            const textContent = getTextContent(children);
+            const isBlock = Boolean(className) || textContent.includes("\n");
 
             if (!isBlock) {
-              return (
-                <code
-                  className="rounded-md border border-black/6 bg-[#f6f6f7] px-1.5 py-0.5 font-mono text-[0.92em] text-foreground"
-                  {...props}
-                >
-                  {children}
-                </code>
-              );
+              return <TypographyInlineCode {...props}>{children}</TypographyInlineCode>;
             }
 
             return (
-              <code className={cn("font-mono", className)} {...props}>
-                {code}
+              <code className={cn("font-mono text-[0.92rem]", className)} {...props}>
+                {children}
               </code>
             );
           },
+          table: ({ className, ...props }) => (
+            <div className="my-8 overflow-x-auto rounded-xl border border-border/80">
+              <table
+                className={cn("w-full text-left text-sm", className)}
+                {...props}
+              />
+            </div>
+          ),
+          thead: ({ className, ...props }) => (
+            <thead className={cn("bg-muted/45", className)} {...props} />
+          ),
+          th: ({ className, ...props }) => (
+            <th
+              className={cn(
+                "border-b border-border px-4 py-3 text-sm font-semibold text-foreground",
+                className
+              )}
+              {...props}
+            />
+          ),
+          td: ({ className, ...props }) => (
+            <td
+              className={cn(
+                "border-t border-border/70 px-4 py-3 align-top text-sm leading-7 text-foreground/78",
+                className
+              )}
+              {...props}
+            />
+          ),
           hr: () => <div className="my-12 border-t border-border" />,
         }}
       >
         {content}
-      </ReactMarkdown>
+      </MarkdownAsync>
     </div>
   );
 }

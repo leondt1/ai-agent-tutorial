@@ -71,8 +71,10 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
 
   return (
     <nav aria-label="On this page">
-      <p className="text-sm font-semibold text-foreground">On this page</p>
-      <div className="mt-4 space-y-1 border-l border-border pl-4">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground">
+        On This Page
+      </p>
+      <div className="mt-3 space-y-0.5 border-l border-border/80 pl-4">
         {headings.map((heading) => {
           const isActive = heading.id === activeId;
 
@@ -81,9 +83,9 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
               key={heading.id}
               href={`#${heading.id}`}
               className={cn(
-                "block text-sm leading-6 text-muted-foreground transition-colors hover:text-foreground",
-                heading.level === 3 && "pl-4",
-                isActive && "font-medium text-primary"
+                "block text-[13px] leading-6 text-muted-foreground transition-colors hover:text-foreground",
+                heading.level === 3 && "pl-3",
+                isActive && "text-primary"
               )}
             >
               {heading.text}

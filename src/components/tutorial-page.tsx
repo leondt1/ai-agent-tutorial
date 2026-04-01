@@ -6,6 +6,7 @@ import { SidebarPane } from "@/components/sidebar-pane";
 import { TableOfContents } from "@/components/table-of-contents";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { TypographyH1, TypographyLead } from "@/components/ui/typography";
 import {
   Sheet,
   SheetContent,
@@ -17,9 +18,9 @@ import type { SidebarSection, Tutorial } from "@/lib/content";
 import { formatTutorialCode } from "@/lib/tutorial-code";
 
 const topNavItems = [
-  { label: "Showcase", href: "#" },
-  { label: "Docs", href: "/" },
-  { label: "Templates", href: "#" },
+  { label: "教程", href: "/" },
+  { label: "设计文档", href: "/tutorial/p1-01-why-agent" },
+  { label: "示例", href: "#" },
 ];
 
 type TutorialPageProps = {
@@ -30,8 +31,8 @@ type TutorialPageProps = {
 export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-4 px-4 md:px-6">
+      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/88 backdrop-blur supports-[backdrop-filter]:bg-background/72">
+        <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-4 px-4 md:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Sheet>
               <SheetTrigger
@@ -60,18 +61,18 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
             </Sheet>
 
             <Link href="/" className="flex items-center gap-3">
-              <span className="flex size-6 items-center justify-center rounded-sm bg-black text-white">
-                <span className="text-[10px] font-semibold">N</span>
+              <span className="flex size-6 items-center justify-center rounded-md border border-border bg-foreground text-background">
+                <span className="text-[10px] font-semibold">AI</span>
               </span>
-              <span className="truncate text-lg font-semibold tracking-[-0.02em] text-foreground">
+              <span className="truncate text-[15px] font-semibold tracking-[-0.02em] text-foreground">
                 Learn AI Agent
               </span>
             </Link>
           </div>
 
-          <nav className="hidden items-center gap-6 text-[15px] text-muted-foreground md:flex">
+          <nav className="hidden items-center gap-5 text-[14px] text-muted-foreground md:flex">
             {topNavItems.map((item) => {
-              const isActive = item.label === "Docs";
+              const isActive = item.label === "教程";
 
               return (
                 <a
@@ -88,23 +89,19 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
           <div className="ml-auto flex items-center gap-2">
             <button
               type="button"
-              className="hidden h-10 items-center gap-3 rounded-xl border border-border bg-[#fafafa] px-3 text-sm text-muted-foreground transition-colors hover:bg-muted/70 md:inline-flex"
+              className="hidden h-9 items-center gap-2 rounded-lg border border-border bg-muted/35 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted/60 md:inline-flex"
             >
               <Search className="size-4" />
-              <span>Search documentation...</span>
+              <span>搜索文档...</span>
               <span className="rounded-md border border-border bg-background px-1.5 py-0.5 text-[11px] text-foreground">
                 ⌘K
               </span>
             </button>
 
-            <Button variant="outline" className="hidden rounded-xl md:inline-flex">
-              Feedback
-            </Button>
-
             <Button
               variant="ghost"
               size="icon-sm"
-              className="rounded-xl"
+              className="rounded-lg text-muted-foreground hover:text-foreground"
               nativeButton={false}
               render={
                 <a
@@ -117,51 +114,47 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
               <Github className="size-4" />
               <span className="sr-only">GitHub</span>
             </Button>
-
-            <Button className="rounded-xl bg-black px-4 text-white hover:bg-black/90">
-              Learn
-            </Button>
           </div>
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-0 px-4 md:px-6 lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)_220px]">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-0 px-4 md:px-6 lg:grid-cols-[248px_minmax(0,1fr)] xl:grid-cols-[248px_minmax(0,1fr)_224px]">
         <aside className="hidden lg:block">
-          <div className="sticky top-16 h-[calc(100vh-4rem)] border-r border-border">
+          <div className="sticky top-14 h-[calc(100vh-3.5rem)] border-r border-border/80">
             <SidebarPane
               currentSlug={tutorial.slug}
               sectionTitle={tutorial.sectionTitle}
               sections={sections}
-              className="h-full px-4 py-5"
+              className="h-full px-3 py-5"
               showSummary
             />
           </div>
         </aside>
 
         <main className="min-w-0">
-          <article className="min-w-0 border-border xl:border-x">
-            <div className="mx-auto max-w-3xl px-0 py-10 md:py-14 xl:px-12">
-              <div className="mb-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+          <article className="min-w-0 xl:border-x xl:border-border/80">
+            <div className="mx-auto max-w-[780px] px-0 py-8 md:py-12 xl:px-12">
+              <div className="mb-5 flex flex-wrap items-center gap-2.5 text-[13px] text-muted-foreground">
                 <span className="font-medium text-primary">Docs</span>
                 <span>/</span>
                 <span>{tutorial.sectionTitle}</span>
                 <Badge
                   variant="outline"
-                  className="h-auto rounded-full border-border px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+                  className="h-auto rounded-md border-border/80 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground"
                 >
                   {formatTutorialCode(tutorial.code)}
                 </Badge>
               </div>
 
-              <h1 className="max-w-3xl text-4xl font-semibold tracking-[-0.04em] text-foreground md:text-5xl">
+              <TypographyH1>
                 {tutorial.title}
-              </h1>
+              </TypographyH1>
 
-              <p className="mt-5 max-w-3xl text-xl leading-8 text-muted-foreground">
+              <TypographyLead className="mt-5 max-w-3xl">
                 {tutorial.description}
-              </p>
+              </TypographyLead>
 
-              <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <div className="mt-5 flex flex-wrap items-center gap-2.5 text-[13px] text-muted-foreground">
                 <span>{tutorial.readingMinutes} min read</span>
                 <span>·</span>
                 <span>{tutorial.loc} LOC</span>
@@ -170,7 +163,7 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
               </div>
 
               {tutorial.quote ? (
-                <div className="mt-8 rounded-2xl border border-border bg-[#fafafa] px-5 py-4 text-[15px] leading-7 text-foreground/75">
+                <div className="mt-8 rounded-2xl border border-border/80 bg-muted/30 px-5 py-4 text-[15px] leading-7 text-foreground/76 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
                   {tutorial.quote}
                 </div>
               ) : null}
@@ -183,11 +176,11 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
         </main>
 
         <aside className="hidden xl:block">
-          <div className="sticky top-24 px-6 py-10">
+          <div className="sticky top-20 px-5 py-8">
             <TableOfContents headings={tutorial.headings} />
-            <div className="mt-8 border-t border-border pt-6 text-sm text-muted-foreground">
+            <div className="mt-8 border-t border-border/80 pt-5 text-sm text-muted-foreground">
               <p className="font-medium text-foreground">{tutorial.tag}</p>
-              <p className="mt-2 leading-6">
+              <p className="mt-2 text-[13px] leading-6">
                 当前页面基于 Markdown 生成，支持通过标题锚点快速跳转。
               </p>
             </div>
