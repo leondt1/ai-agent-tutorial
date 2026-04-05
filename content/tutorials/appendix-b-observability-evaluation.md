@@ -1,6 +1,5 @@
 ---
 title: 附录 B：观测、调试与评测
-description: 给 Agent 增加可观察性，帮助你理解它为什么成功、又为什么失败。
 section: appendix
 sectionTitle: 附录
 sectionColor: "#6b7280"
@@ -8,7 +7,7 @@ sectionOrder: 5
 order: 2
 code: A2
 tag: Observability
-quote: 如果看不见 Agent 每一轮做了什么，就很难真正把它调好。
+summary: 如果看不见 Agent 每一轮做了什么，就很难真正把它调好。
 toolCount: 0
 ---
 

@@ -1,6 +1,5 @@
 ---
 title: Tool Calling，给 Agent 行动力
-description: 通过结构化输入、稳定返回值和错误处理，让工具真正适合模型调用。
 section: execution
 sectionTitle: 让 Agent 学会行动与规划
 sectionColor: "#4f7cff"
@@ -8,7 +7,7 @@ sectionOrder: 2
 order: 1
 code: 03
 tag: Tool Calling
-quote: 好的工具不是把函数暴露给模型，而是把能力变成可预测的动作接口。
+summary: 好的工具不是把函数暴露给模型，而是把能力变成可预测的动作接口。
 toolCount: 4
 ---
 

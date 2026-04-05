@@ -1,0 +1,9 @@
+{
+  "name": "@tutorial-examples/02-minimal-loop",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

@@ -1,6 +1,5 @@
 ---
 title: MCP，用标准协议接入工具与资源
-description: 当工具和资源越来越多时，用标准化接入层让 Agent 更容易扩展和集成。
 section: systems
 sectionTitle: 把能力变成工程系统
 sectionColor: "#b45309"
@@ -8,7 +7,7 @@ sectionOrder: 4
 order: 1
 code: 08
 tag: MCP
-quote: Tool Calling 解决的是“怎么调用”，MCP 解决的是“怎么标准化接入”。
+summary: Tool Calling 解决的是“怎么调用”，MCP 解决的是“怎么标准化接入”。
 toolCount: 5
 ---
 

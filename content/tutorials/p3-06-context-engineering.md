@@ -1,6 +1,5 @@
 ---
 title: Context Engineering，决定 Agent 的上限
-description: 让 Agent 在每一轮都看见对的信息，而不是把所有历史一股脑塞进上下文。
 section: context
 sectionTitle: 让 Agent 看见正确的信息
 sectionColor: "#0f766e"
@@ -8,7 +7,7 @@ sectionOrder: 3
 order: 1
 code: 06
 tag: Context
-quote: 很多 Agent 的失败，不是因为模型不够强，而是因为上下文组织得不对。
+summary: 很多 Agent 的失败，不是因为模型不够强，而是因为上下文组织得不对。
 toolCount: 3
 ---
 

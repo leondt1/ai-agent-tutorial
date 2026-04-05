@@ -1,6 +1,5 @@
 ---
 title: 为什么需要 Agent，而不只是 Chat API
-description: 建立整套教程的起点，先讲清楚 Agent、工作流和聊天机器人的边界。
 section: foundations
 sectionTitle: 建立正确心智模型
 sectionColor: "#2563eb"
@@ -8,7 +7,7 @@ sectionOrder: 1
 order: 1
 code: 01
 tag: 心智模型
-quote: Agent 不是会聊天的模型，而是能在状态中持续决策和行动的系统。
+summary: Agent 不是会聊天的模型，而是能在状态中持续决策和行动的系统。
 toolCount: 0
 ---
 

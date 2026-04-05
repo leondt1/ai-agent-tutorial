@@ -1,6 +1,5 @@
 ---
 title: Plan-and-Execute，从反应式到规划式
-description: 当任务链路变长时，让 Agent 先规划，再执行，并在必要时重规划。
 section: execution
 sectionTitle: 让 Agent 学会行动与规划
 sectionColor: "#4f7cff"
@@ -8,7 +7,7 @@ sectionOrder: 2
 order: 3
 code: 05
 tag: Planning
-quote: 显式规划不是更高级的 ReAct，而是面对长任务时的一种权衡。
+summary: 显式规划不是更高级的 ReAct，而是面对长任务时的一种权衡。
 toolCount: 5
 ---
 

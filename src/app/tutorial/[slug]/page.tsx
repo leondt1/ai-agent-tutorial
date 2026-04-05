@@ -34,7 +34,7 @@ export async function generateMetadata({
 
   return {
     title: tutorial.title,
-    description: tutorial.description,
+    description: tutorial.summary,
   };
 }
 

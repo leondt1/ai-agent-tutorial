@@ -1,6 +1,5 @@
 ---
 title: ReAct，让 Agent 学会边想边做
-description: 用“行动-观察-再决策”的方式，让 Agent 逐步逼近复杂任务的答案。
 section: execution
 sectionTitle: 让 Agent 学会行动与规划
 sectionColor: "#4f7cff"
@@ -8,7 +7,7 @@ sectionOrder: 2
 order: 2
 code: 04
 tag: ReAct
-quote: ReAct 的价值不在于让模型展示思考，而在于让决策依赖真实观察。
+summary: ReAct 的价值不在于让模型展示思考，而在于让决策依赖真实观察。
 toolCount: 4
 ---
 

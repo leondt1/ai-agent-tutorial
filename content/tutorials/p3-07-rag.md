@@ -1,6 +1,5 @@
 ---
 title: RAG，给 Agent 补充外部知识
-description: 把外部文档变成可检索、可引用、可注入上下文的知识供给系统。
 section: context
 sectionTitle: 让 Agent 看见正确的信息
 sectionColor: "#0f766e"
@@ -8,7 +7,7 @@ sectionOrder: 3
 order: 2
 code: 07
 tag: RAG
-quote: RAG 的本质不是让模型记住知识，而是在需要时拿到正确知识。
+summary: RAG 的本质不是让模型记住知识，而是在需要时拿到正确知识。
 toolCount: 4
 ---
 

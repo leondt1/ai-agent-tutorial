@@ -8,7 +8,7 @@ const contentDirectory = path.join(process.cwd(), "content", "tutorials");
 
 type TutorialFrontmatter = {
   title: string;
-  description: string;
+  summary: string;
   section: string;
   sectionTitle: string;
   sectionColor: string;
@@ -16,7 +16,6 @@ type TutorialFrontmatter = {
   order: number;
   code: string;
   tag: string;
-  quote?: string;
   toolCount?: number;
 };
 

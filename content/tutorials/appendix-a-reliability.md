@@ -1,6 +1,5 @@
 ---
 title: 附录 A：可靠性与安全边界
-description: 让 Agent 从“能跑起来”走向“更稳定、更安全、更适合真实使用”。
 section: appendix
 sectionTitle: 附录
 sectionColor: "#6b7280"
@@ -8,7 +7,7 @@ sectionOrder: 5
 order: 1
 code: A1
 tag: Reliability
-quote: 能跑通只是开始，真正的工程问题往往出现在失败、重试与权限边界里。
+summary: 能跑通只是开始，真正的工程问题往往出现在失败、重试与权限边界里。
 toolCount: 0
 ---
 

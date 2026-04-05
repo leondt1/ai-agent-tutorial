@@ -1,6 +1,5 @@
 ---
 title: 组装一个真正可用的 TypeScript Agent
-description: 把前面的所有能力整合起来，形成一个可运行、可调试、可扩展的完整 Agent Demo。
 section: systems
 sectionTitle: 把能力变成工程系统
 sectionColor: "#b45309"
@@ -8,7 +7,7 @@ sectionOrder: 4
 order: 3
 code: 10
 tag: Integration
-quote: 一个可用的 Agent，不是功能堆砌，而是让每一层能力都各司其职。
+summary: 一个可用的 Agent，不是功能堆砌，而是让每一层能力都各司其职。
 toolCount: 8
 ---
 

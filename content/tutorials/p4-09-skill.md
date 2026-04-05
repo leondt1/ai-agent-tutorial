@@ -1,6 +1,5 @@
 ---
 title: Skill，把重复任务沉淀成能力单元
-description: 把高频任务的知识、流程和策略沉淀下来，而不是不断堆长 Prompt。
 section: systems
 sectionTitle: 把能力变成工程系统
 sectionColor: "#b45309"
@@ -8,7 +7,7 @@ sectionOrder: 4
 order: 2
 code: 09
 tag: Skill
-quote: Tool 是动作接口，Skill 是任务能力封装，它们解决的不是同一个问题。
+summary: Tool 是动作接口，Skill 是任务能力封装，它们解决的不是同一个问题。
 toolCount: 3
 ---
 

@@ -6,7 +6,7 @@ import { SidebarPane } from "@/components/sidebar-pane";
 import { TableOfContents } from "@/components/table-of-contents";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TypographyH1, TypographyLead } from "@/components/ui/typography";
+import { TypographyH1 } from "@/components/ui/typography";
 import {
   Sheet,
   SheetContent,
@@ -150,10 +150,6 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
                 {tutorial.title}
               </TypographyH1>
 
-              <TypographyLead className="mt-5 max-w-3xl">
-                {tutorial.description}
-              </TypographyLead>
-
               <div className="mt-5 flex flex-wrap items-center gap-2.5 text-[13px] text-muted-foreground">
                 <span>{tutorial.readingMinutes} min read</span>
                 <span>·</span>
@@ -162,11 +158,9 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
                 <span>{tutorial.toolCount ?? 0} tools</span>
               </div>
 
-              {tutorial.quote ? (
-                <div className="mt-8 rounded-2xl border border-border/80 bg-muted/30 px-5 py-4 text-[15px] leading-7 text-foreground/76 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-                  {tutorial.quote}
-                </div>
-              ) : null}
+              <div className="mt-8 rounded-2xl border border-border/80 bg-muted/30 px-5 py-4 text-[15px] leading-7 text-foreground/76 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                {tutorial.summary}
+              </div>
 
               <div className="mt-12">
                 <MarkdownRenderer content={tutorial.content} />
