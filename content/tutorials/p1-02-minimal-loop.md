@@ -155,7 +155,7 @@ export type AgentState = {
 - 工具参数要不要做 schema 校验
 - tool message 要不要有 `callId`
 - 工具结果是不是应该带结构化字段
-- 模型输出是不是应该保留原始 provider payload
+- 模型输出是不是应该保留原始模型接口返回值
 
 这些都是真问题，但现在先不要处理。  
 第二章的任务不是“设计一个大而全的 Agent Runtime”，而是“看清 Agent 最小到底靠什么跑起来”。
@@ -239,7 +239,7 @@ async function callModel(messages: Message[]): Promise<ModelDecision> {
 ```
 
 这个抽象非常重要。  
-无论你后面接 OpenAI、Anthropic，还是别的模型服务，外层 Agent Loop 都不应该关心 provider 的原始响应格式。Loop 真正在意的只有一件事：
+无论你后面接 OpenAI、Anthropic，还是别的模型服务，外层 Agent Loop 都不应该关心底层模型接口的原始响应格式。Loop 真正在意的只有一件事：
 
 > 当前这轮，模型是要继续行动，还是已经可以结束？
 
