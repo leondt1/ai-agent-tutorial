@@ -292,13 +292,9 @@ async function callModel(messages: Message[]): Promise<ModelDecision> {
 
 ## 实现最小 `runAgent()`
 
-现在把类型、工具和模型决策器串起来。
+现在把类型、工具和模型决策器串起来。为了方便顺着阅读，示例把这些逻辑都放在同一个 `src/index.ts` 文件里。
 
 ```ts
-import { callModel } from "./call-model.js";
-import type { AgentState, ToolCall, ToolResult } from "./types.js";
-import { tools } from "./tools/search-docs.js";
-
 async function runTool(toolCall: ToolCall): Promise<ToolResult> {
   const tool = tools[toolCall.name as keyof typeof tools];
 
@@ -366,7 +362,7 @@ export async function runAgent(userInput: string) {
 
 如果你把这段代码拆成几个文件，本章的最小示例其实就已经完成了。
 
-完整可运行版本可以放在 `examples/02-minimal-loop`，并通过根目录脚本直接运行。
+完整可运行版本可以直接放在 `examples/02-minimal-loop/index.ts`，并通过根目录脚本直接运行。
 
 它做的事非常直接：
 

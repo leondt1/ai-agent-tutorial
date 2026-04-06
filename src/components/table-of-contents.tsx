@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { MarkdownHeading } from "@/lib/markdown";
 import { cn } from "@/lib/utils";
@@ -9,8 +9,41 @@ type TableOfContentsProps = {
   headings: MarkdownHeading[];
 };
 
+type TocNode = MarkdownHeading & {
+  children: MarkdownHeading[];
+};
+
+function buildTocTree(headings: MarkdownHeading[]) {
+  const nodes: TocNode[] = [];
+  let currentParent: TocNode | null = null;
+
+  for (const heading of headings) {
+    if (heading.level === 2) {
+      currentParent = {
+        ...heading,
+        children: [],
+      };
+      nodes.push(currentParent);
+      continue;
+    }
+
+    if (currentParent) {
+      currentParent.children.push(heading);
+      continue;
+    }
+
+    nodes.push({
+      ...heading,
+      children: [],
+    });
+  }
+
+  return nodes;
+}
+
 export function TableOfContents({ headings }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState(headings[0]?.id ?? "");
+  const tocTree = useMemo(() => buildTocTree(headings), [headings]);
 
   useEffect(() => {
     if (headings.length === 0) {
@@ -31,7 +64,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
           .filter((entry) => entry.isIntersecting)
           .sort(
             (entryA, entryB) =>
-              entryA.boundingClientRect.top - entryB.boundingClientRect.top
+              entryA.boundingClientRect.top - entryB.boundingClientRect.top,
           );
 
         if (visibleEntries[0]?.target.id) {
@@ -41,7 +74,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
       {
         rootMargin: "-96px 0px -70% 0px",
         threshold: [0, 1],
-      }
+      },
     );
 
     for (const element of elements) {
@@ -74,24 +107,50 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
       <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground">
         On This Page
       </p>
-      <div className="mt-3 space-y-0.5 border-l border-border/80 pl-4">
-        {headings.map((heading) => {
-          const isActive = heading.id === activeId;
+      <div className="mt-3 border-l border-border/80 pl-4">
+        <ul className="space-y-2">
+          {tocTree.map((node) => {
+            const isActive = node.id === activeId;
+            const hasActiveChild = node.children.some((child) => child.id === activeId);
 
-          return (
-            <a
-              key={heading.id}
-              href={`#${heading.id}`}
-              className={cn(
-                "block text-[13px] leading-6 text-muted-foreground transition-colors hover:text-foreground",
-                heading.level === 3 && "pl-3",
-                isActive && "text-primary"
-              )}
-            >
-              {heading.text}
-            </a>
-          );
-        })}
+            return (
+              <li key={node.id}>
+                <a
+                  href={`#${node.id}`}
+                  className={cn(
+                    "block text-[13px] font-medium leading-7 transition-colors hover:text-foreground",
+                    isActive || hasActiveChild ? "text-foreground" : "text-foreground/78",
+                    isActive && "text-primary",
+                  )}
+                >
+                  {node.text}
+                </a>
+
+                {node.children.length > 0 ? (
+                  <ul className="mt-1 space-y-1 border-l border-border/70 pl-4">
+                    {node.children.map((child) => {
+                      const isChildActive = child.id === activeId;
+
+                      return (
+                        <li key={child.id}>
+                          <a
+                            href={`#${child.id}`}
+                            className={cn(
+                              "block text-[12px] leading-6 transition-colors hover:text-foreground",
+                              isChildActive ? "text-primary" : "text-muted-foreground",
+                            )}
+                          >
+                            {child.text}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </nav>
   );
