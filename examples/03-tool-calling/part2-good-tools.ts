@@ -1,6 +1,6 @@
-import fs from "node:fs";
 import fsPromises from "node:fs/promises";
 import path from "node:path";
+import chalk from "chalk";
 import { config } from "dotenv";
 import OpenAI from "openai";
 import { z, type ZodType } from "zod";
@@ -13,22 +13,21 @@ const repositoryRoot = process.cwd();
 const model = process.env.OPENAI_MODEL?.trim() || "gpt-5-mini";
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
 });
 
-type ToolError = {
-  code: string;
-  message: string;
-  retryable: boolean;
-};
+// ── 统一类型 ──────────────────────────────────────────
 
-type ToolResult<TData = unknown> = {
+// 工具执行结果的标准结构：包含成功标识、简短总结和详细数据
+type ToolResult = {
   ok: boolean;
   summary: string;
-  data?: TData;
-  error?: ToolError;
+  data?: unknown;
+  error?: string;
 };
 
-type ToolDefinition<TInput, TData = unknown> = {
+// 工具的定义标准：约束了工具名称、描述、给模型看的参数结构和实际校验的 schema
+type ToolDefinition<TInput> = {
   name: string;
   description: string;
   parameters: {
@@ -38,77 +37,56 @@ type ToolDefinition<TInput, TData = unknown> = {
     additionalProperties?: boolean;
   };
   inputSchema: ZodType<TInput>;
-  execute(input: TInput): Promise<ToolResult<TData>>;
+  execute(input: TInput): Promise<ToolResult>;
 };
 
-type FunctionCallLike = {
-  type: "function_call";
-  call_id: string;
-  name: string;
-  arguments: string;
-};
-
-function createToolError(code: string, message: string, retryable: boolean): ToolError {
-  return {
-    code,
-    message,
-    retryable,
+type ToolCall = {
+  id: string;
+  type: "function";
+  function: {
+    name: string;
+    arguments: string;
   };
-}
+};
 
-function getFunctionCalls(response: { output: unknown[] }) {
-  return response.output.filter(
-    (item): item is FunctionCallLike =>
-      typeof item === "object" &&
-      item !== null &&
-      "type" in item &&
-      item.type === "function_call" &&
-      "name" in item &&
-      typeof item.name === "string" &&
-      "arguments" in item &&
-      typeof item.arguments === "string" &&
-      "call_id" in item &&
-      typeof item.call_id === "string",
-  );
-}
+// ── 最小注册器 ────────────────────────────────────────
 
-function createToolRegistry<const TTools extends readonly ToolDefinition<unknown, unknown>[]>(
-  definitions: TTools,
-) {
+// 注册器核心：统一管理多个工具，并负责将模型的工具调用转化为实际的函数执行
+function createToolRegistry(definitions: ToolDefinition<unknown>[]) {
   const toolsByName = new Map(definitions.map((tool) => [tool.name, tool]));
 
   return {
-    openAITools: definitions.map((tool) => ({
+    chatTools: definitions.map((tool) => ({
       type: "function" as const,
-      name: tool.name,
-      description: tool.description,
-      strict: true,
-      parameters: tool.parameters,
+      function: {
+        name: tool.name,
+        description: tool.description,
+        strict: true,
+        parameters: tool.parameters,
+      },
     })),
-    async run(call: FunctionCallLike): Promise<ToolResult> {
-      const tool = toolsByName.get(call.name);
+
+    // 执行工具调用的主逻辑：查找工具、校验参数、执行逻辑
+    async run(call: ToolCall): Promise<ToolResult> {
+      const tool = toolsByName.get(call.function.name);
 
       if (!tool) {
         return {
           ok: false,
-          summary: `未知工具：${call.name}`,
-          error: createToolError("TOOL_NOT_FOUND", `Tool ${call.name} is not registered.`, false),
+          summary: `未知工具：${call.function.name}`,
+          error: `Tool ${call.function.name} is not registered.`,
         };
       }
 
       let rawInput: unknown;
 
       try {
-        rawInput = JSON.parse(call.arguments);
-      } catch (error) {
+        rawInput = JSON.parse(call.function.arguments);
+      } catch {
         return {
           ok: false,
-          summary: `工具参数不是合法 JSON：${call.name}`,
-          error: createToolError(
-            "INVALID_JSON",
-            error instanceof Error ? error.message : String(error),
-            true,
-          ),
+          summary: `工具参数不是合法 JSON：${call.function.name}`,
+          error: "Arguments is not valid JSON.",
         };
       }
 
@@ -117,14 +95,13 @@ function createToolRegistry<const TTools extends readonly ToolDefinition<unknown
       if (!parsed.success) {
         return {
           ok: false,
-          summary: `工具参数校验失败：${call.name}`,
-          error: createToolError(
-            "INVALID_ARGUMENTS",
-            parsed.error.issues
-              .map((issue) => `${issue.path.join(".") || "input"}: ${issue.message}`)
-              .join("; "),
-            true,
-          ),
+          summary: `工具参数校验失败：${call.function.name}`,
+          error: parsed.error.issues
+            .map(
+              (issue) =>
+                `${issue.path.join(".") || "input"}: ${issue.message}`,
+            )
+            .join("; "),
         };
       }
 
@@ -133,39 +110,13 @@ function createToolRegistry<const TTools extends readonly ToolDefinition<unknown
   };
 }
 
-const ignoredDirectories = new Set([".git", ".next", "node_modules", "dist"]);
+// ── 三个工具定义 ──────────────────────────────────────
 
-async function collectFiles(directory: string, result: string[] = []) {
-  const entries = await fsPromises.readdir(directory, { withFileTypes: true });
-
-  for (const entry of entries) {
-    if (ignoredDirectories.has(entry.name)) {
-      continue;
-    }
-
-    const entryPath = path.join(directory, entry.name);
-
-    if (entry.isDirectory()) {
-      await collectFiles(entryPath, result);
-      continue;
-    }
-
-    result.push(entryPath);
-  }
-
-  return result;
-}
-
-const listFilesTool: ToolDefinition<
-  {
-    directory?: string;
-    limit?: number;
-  },
-  Array<{
-    path: string;
-    type: "file" | "directory";
-  }>
-> = {
+// 工具 1：列出目录下的文件
+const listFilesTool: ToolDefinition<{
+  directory?: string;
+  limit?: number;
+}> = {
   name: "listFiles",
   description: "列出某个目录下的文件和子目录。",
   parameters: {
@@ -189,7 +140,9 @@ const listFilesTool: ToolDefinition<
   async execute(input) {
     try {
       const directory = path.resolve(repositoryRoot, input.directory ?? ".");
-      const entries = await fsPromises.readdir(directory, { withFileTypes: true });
+      const entries = await fsPromises.readdir(directory, {
+        withFileTypes: true,
+      });
       const limit = input.limit ?? 20;
       const data = entries.slice(0, limit).map((entry) => ({
         path: path.relative(repositoryRoot, path.join(directory, entry.name)),
@@ -205,28 +158,18 @@ const listFilesTool: ToolDefinition<
       return {
         ok: false,
         summary: `列目录失败：${input.directory ?? "."}`,
-        error: createToolError(
-          "LIST_FILES_ERROR",
-          error instanceof Error ? error.message : String(error),
-          true,
-        ),
+        error: error instanceof Error ? error.message : String(error),
       };
     }
   },
 };
 
-const searchFilesTool: ToolDefinition<
-  {
-    query: string;
-    directory?: string;
-    limit?: number;
-  },
-  Array<{
-    path: string;
-    line: number;
-    snippet: string;
-  }>
-> = {
+// 工具 2：在项目文件中搜索关键词
+const searchFilesTool: ToolDefinition<{
+  query: string;
+  directory?: string;
+  limit?: number;
+}> = {
   name: "searchFiles",
   description: "在项目文件中搜索关键词，返回匹配的路径、行号和片段。",
   parameters: {
@@ -254,12 +197,44 @@ const searchFilesTool: ToolDefinition<
     limit: z.number().int().positive().max(20).optional(),
   }),
   async execute(input) {
+    const ignoredDirectories = new Set([
+      ".git",
+      ".next",
+      ".gemini",
+      "node_modules",
+      "dist",
+    ]);
+
+    async function collectFiles(directory: string, result: string[] = []) {
+      const entries = await fsPromises.readdir(directory, {
+        withFileTypes: true,
+      });
+
+      for (const entry of entries) {
+        if (ignoredDirectories.has(entry.name)) {
+          continue;
+        }
+
+        const entryPath = path.join(directory, entry.name);
+
+        if (entry.isDirectory()) {
+          await collectFiles(entryPath, result);
+          continue;
+        }
+
+        result.push(entryPath);
+      }
+
+      return result;
+    }
+
     try {
       const directory = path.resolve(repositoryRoot, input.directory ?? ".");
       const limit = input.limit ?? 5;
       const query = input.query.toLowerCase();
       const files = await collectFiles(directory);
-      const matches: Array<{ path: string; line: number; snippet: string }> = [];
+      const matches: Array<{ path: string; line: number; snippet: string }> =
+        [];
 
       for (const filePath of files) {
         if (matches.length >= limit) {
@@ -300,37 +275,25 @@ const searchFilesTool: ToolDefinition<
 
       return {
         ok: true,
-        summary: `找到 ${matches.length} 条与“${input.query}”相关的结果。`,
+        summary: `找到 ${matches.length} 条与"${input.query}"相关的结果。`,
         data: matches,
       };
     } catch (error) {
       return {
         ok: false,
         summary: `搜索失败：${input.query}`,
-        error: createToolError(
-          "SEARCH_ERROR",
-          error instanceof Error ? error.message : String(error),
-          true,
-        ),
+        error: error instanceof Error ? error.message : String(error),
       };
     }
   },
 };
 
-const readFileTool: ToolDefinition<
-  {
-    path: string;
-    startLine?: number;
-    endLine?: number;
-  },
-  {
-    path: string;
-    startLine: number;
-    endLine: number;
-    content: string;
-    totalLines: number;
-  }
-> = {
+// 工具 3：读取指定文件的内容
+const readFileTool: ToolDefinition<{
+  path: string;
+  startLine?: number;
+  endLine?: number;
+}> = {
   name: "readFile",
   description: "读取项目中的 UTF-8 文本文件，可选指定起止行。",
   parameters: {
@@ -381,77 +344,112 @@ const readFileTool: ToolDefinition<
       return {
         ok: false,
         summary: `读取文件失败：${input.path}`,
-        error: createToolError(
-          "FILE_READ_ERROR",
-          error instanceof Error ? error.message : String(error),
-          false,
-        ),
+        error: error instanceof Error ? error.message : String(error),
       };
     }
   },
 };
 
-const registry = createToolRegistry([listFilesTool, searchFilesTool, readFileTool] as const);
+// ── 注册工具 & 主流程 ────────────────────────────────
+
+const registry = createToolRegistry([
+  listFilesTool,
+  searchFilesTool,
+  readFileTool,
+]);
+
+function printSection(title: string) {
+  console.log(`\n${chalk.bold.cyan(title)}`);
+}
 
 async function main() {
   const userInput =
     process.argv.slice(2).join(" ").trim() ||
     "请告诉我这个项目怎么启动。如果 README 不够，就继续搜索相关文件，再读取关键内容。";
 
-  let response = await client.responses.create({
-    model,
-    input: [
-      {
-        role: "system",
-        content:
-          "你是一个工程助手。优先使用最合适的工具来查看本地项目信息。拿到足够信息后，再给出简洁、明确的最终回答。",
-      },
-      {
-        role: "user",
-        content: userInput,
-      },
-    ],
-    tools: registry.openAITools,
-  });
+  printSection("[user question]");
+  console.log(chalk.white(userInput));
 
-  for (let step = 1; step <= 6; step += 1) {
-    const functionCalls = getFunctionCalls(response);
+  // 步骤 1：准备初始的消息历史，告知模型身份和任务目标
+  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+    {
+      role: "system",
+      content:
+        "你是一个工程助手。优先使用最合适的工具来查看本地项目信息。拿到足够信息后，再给出简洁、明确的最终回答。",
+    },
+    {
+      role: "user",
+      content: userInput,
+    },
+  ];
 
-    if (functionCalls.length === 0) {
-      console.log(`\n[step ${step}] final answer`);
-      console.log(response.output_text);
+  // 步骤 2：启动一个循环，允许模型与工具多次交互，直到得出最终答案
+  // 设置一个最大交互次数，防止无限循环
+  const maxSteps = 6;
+
+  for (let step = 1; step <= maxSteps; step += 1) {
+    const response = await client.chat.completions.create({
+      model,
+      messages,
+      tools: registry.chatTools,
+    });
+
+    const assistantMessage = response.choices[0]?.message;
+
+    if (!assistantMessage) {
+      break;
+    }
+
+    const toolCalls =
+      assistantMessage.tool_calls?.filter(
+        (call): call is ToolCall => call.type === "function",
+      ) ?? [];
+
+    // 如果模型没有请求任何工具，说明它直接给出了回答，此时跳出循环
+    if (toolCalls.length === 0) {
+      printSection(`[step ${step}] model decision: final`);
+      console.log(
+        chalk.green(assistantMessage.content ?? "模型没有返回可显示的文本。"),
+      );
       return;
     }
 
-    const toolOutputs: Array<{
-      type: "function_call_output";
-      call_id: string;
-      output: string;
-    }> = [];
+    // 步骤 3：如果模型请求调用工具，先将模型的请求记录到消息历史中
+    messages.push({
+      role: "assistant",
+      content: assistantMessage.content ?? "",
+      tool_calls: toolCalls.map((call) => ({
+        id: call.id,
+        type: "function" as const,
+        function: {
+          name: call.function.name,
+          arguments: call.function.arguments,
+        },
+      })),
+    });
 
-    for (const call of functionCalls) {
-      console.log(`\n[step ${step}] run tool: ${call.name}`);
-      console.log(call.arguments);
+    // 步骤 4：实际执行模型请求的工具，并将结果追加到消息历史中，以便进入下一轮循环让模型读取
+    for (const call of toolCalls) {
+      printSection(`[step ${step}] model decision: tool`);
+      console.log(
+        chalk.yellow(`${call.function.name}(${call.function.arguments})`),
+      );
 
       const result = await registry.run(call);
 
-      console.log(`[step ${step}] tool summary: ${result.summary}`);
+      console.log(chalk.magenta(`[step ${step}] tool result:`));
+      console.log(chalk.gray(result.summary));
 
-      toolOutputs.push({
-        type: "function_call_output" as const,
-        call_id: call.call_id,
-        output: JSON.stringify(result),
+      messages.push({
+        role: "tool",
+        tool_call_id: call.id,
+        content: JSON.stringify(result),
       });
     }
-
-    response = await client.responses.create({
-      model,
-      previous_response_id: response.id,
-      input: toolOutputs,
-    });
   }
 
-  throw new Error("Model exceeded max tool steps.");
+  printSection("[error]");
+  console.log(chalk.red("模型超过了最大工具调用轮次。"));
 }
 
 main().catch((error: unknown) => {

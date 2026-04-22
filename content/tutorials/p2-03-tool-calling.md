@@ -374,18 +374,14 @@ async function searchFiles(query: string) {
 为了减少来回跳转，第二部分把这些公共类型也直接写在 [part2-good-tools.ts](/Users/leon/Desktop/work/ai-agent-tutorial/examples/03-tool-calling/part2-good-tools.ts) 里。
 
 ```ts
-type ToolResult<TData = unknown> = {
+type ToolResult = {
   ok: boolean;
   summary: string;
-  data?: TData;
-  error?: {
-    code: string;
-    message: string;
-    retryable: boolean;
-  };
+  data?: unknown;
+  error?: string;
 };
 
-type ToolDefinition<TInput, TData = unknown> = {
+type ToolDefinition<TInput> = {
   name: string;
   description: string;
   parameters: {
@@ -395,7 +391,7 @@ type ToolDefinition<TInput, TData = unknown> = {
     additionalProperties?: boolean;
   };
   inputSchema: ZodType<TInput>;
-  execute(input: TInput): Promise<ToolResult<TData>>;
+  execute(input: TInput): Promise<ToolResult>;
 };
 ```
 
@@ -491,12 +487,10 @@ const parsed = tool.inputSchema.safeParse(rawInput);
 if (!parsed.success) {
   return {
     ok: false,
-    summary: `工具参数校验失败：${call.name}`,
-    error: {
-      code: "INVALID_ARGUMENTS",
-      message: "...",
-      retryable: true,
-    },
+    summary: `工具参数校验失败：${call.function.name}`,
+    error: parsed.error.issues
+      .map((issue) => `${issue.path.join(".") || "input"}: ${issue.message}`)
+      .join("; "),
   };
 }
 ```
@@ -504,7 +498,7 @@ if (!parsed.success) {
 这一步的价值非常直接：
 
 - 模型传错字段时，能立刻被拦住
-- 错误会变成统一结构，而不是直接抛异常
+- 错误会变成字符串返回，而不是直接抛异常
 - 下一轮模型能理解失败原因，并决定要不要重试
 
 也就是说，失败信息不是“额外补充”，而是 tool 设计的一部分。
@@ -537,9 +531,9 @@ const registry = createToolRegistry([
 [part2-good-tools.ts](/Users/leon/Desktop/work/ai-agent-tutorial/examples/03-tool-calling/part2-good-tools.ts) 里会：
 
 - 先把 `listFiles`、`searchFiles`、`readFile` 都注册进来
-- 再把这些 tool 定义传给 `client.responses.create`
-- 然后在每一轮里处理模型发出的 `function_call`
-- 最后把执行结果继续通过 `function_call_output` 回填给模型
+- 再把这些 tool 定义传给 `client.chat.completions.create`
+- 然后在每一轮里处理模型发出的 `tool_calls`
+- 最后把执行结果作为 `tool` 消息回填给模型
 
 运行命令是：
 
