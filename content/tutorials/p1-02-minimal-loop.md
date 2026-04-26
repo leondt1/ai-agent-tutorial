@@ -362,7 +362,7 @@ export async function runAgent(userInput: string) {
 
 如果你把这段代码拆成几个文件，本章的最小示例其实就已经完成了。
 
-完整可运行版本可以直接放在 `examples/02-minimal-loop/index.ts`，并通过根目录脚本直接运行。
+完整可运行版本可以直接放在 [examples/02-minimal-loop/index.ts](https://github.com/leondt1/ai-agent-tutorial/blob/main/examples/02-minimal-loop/index.ts)，并通过根目录脚本直接运行。
 
 它做的事非常直接：
 

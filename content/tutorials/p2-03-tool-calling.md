@@ -53,7 +53,7 @@ toolCount: 4
 
 ## 先准备真实示例
 
-这一章对应的可运行代码在 `examples/03-tool-calling/` 目录下。
+这一章对应的可运行代码在 [examples/03-tool-calling/](https://github.com/leondt1/ai-agent-tutorial/tree/main/examples/03-tool-calling) 目录下。
 
 为了让示例真的能调用模型，我们先准备环境变量。  
 在项目根目录创建 `.env.local`：
@@ -78,7 +78,7 @@ pnpm add openai zod dotenv chalk
 
 ## 第一部分：先写一个最小 Tool
 
-第一部分对应 [part1-minimal-tool.ts](/Users/leon/Desktop/work/ai-agent-tutorial/examples/03-tool-calling/part1-minimal-tool.ts)。
+第一部分对应 [part1-minimal-tool.ts](https://github.com/leondt1/ai-agent-tutorial/blob/main/examples/03-tool-calling/part1-minimal-tool.ts)。
 
 目标非常简单：
 
@@ -116,7 +116,7 @@ const model = process.env.OPENAI_MODEL?.trim() || "gpt-5-mini";
 
 ### 写一个最小 `readFile`
 
-最小 tool 放在 [part1-minimal-tool.ts](/Users/leon/Desktop/work/ai-agent-tutorial/examples/03-tool-calling/part1-minimal-tool.ts) 里。
+最小 tool 放在 [part1-minimal-tool.ts](https://github.com/leondt1/ai-agent-tutorial/blob/main/examples/03-tool-calling/part1-minimal-tool.ts) 里。
 
 ```ts
 import fs from "node:fs/promises";
@@ -348,7 +348,7 @@ README 里提到了安装步骤……
 
 > 怎样把 tool 设计成模型更容易正确调用的动作接口？
 
-第二部分对应 [part2-good-tools.ts](/Users/leon/Desktop/work/ai-agent-tutorial/examples/03-tool-calling/part2-good-tools.ts)。
+第二部分对应 [part2-good-tools.ts](https://github.com/leondt1/ai-agent-tutorial/blob/main/examples/03-tool-calling/part2-good-tools.ts)。
 
 ### 为什么自由函数不够
 
@@ -371,7 +371,7 @@ async function searchFiles(query: string) {
 
 ### 统一工具类型
 
-为了减少来回跳转，第二部分把这些公共类型也直接写在 [part2-good-tools.ts](/Users/leon/Desktop/work/ai-agent-tutorial/examples/03-tool-calling/part2-good-tools.ts) 里。
+为了减少来回跳转，第二部分把这些公共类型也直接写在 [part2-good-tools.ts](https://github.com/leondt1/ai-agent-tutorial/blob/main/examples/03-tool-calling/part2-good-tools.ts) 里。
 
 ```ts
 type ToolResult = {
@@ -528,7 +528,7 @@ const registry = createToolRegistry([
 最重要的是，第二部分并不是“只讲理论”。  
 它同样是真实调用模型的版本。
 
-[part2-good-tools.ts](/Users/leon/Desktop/work/ai-agent-tutorial/examples/03-tool-calling/part2-good-tools.ts) 里会：
+[part2-good-tools.ts](https://github.com/leondt1/ai-agent-tutorial/blob/main/examples/03-tool-calling/part2-good-tools.ts) 里会：
 
 - 先把 `listFiles`、`searchFiles`、`readFile` 都注册进来
 - 再把这些 tool 定义传给 `client.chat.completions.create`
