@@ -25,6 +25,7 @@ These rules are especially important for files under `examples/`.
 - Keep defensive engineering to the minimum needed for the lesson.
 - Avoid over-abstracting setup code if the abstraction is not itself part of the lesson.
 - If a chapter is teaching a minimal concept, keep the example intentionally narrow and a little "hard-coded".
+- In tutorial example code, add short orienting comments that mark the reading path and explain each major step's teaching role. Prefer comments like "1. Initialize the model client" or "3. Run the tool and write the observation back" over line-by-line syntax explanations.
 
 ## Chapter Progression Rules
 

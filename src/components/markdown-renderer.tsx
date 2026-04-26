@@ -1,8 +1,13 @@
-import { isValidElement, type ComponentPropsWithoutRef, type ReactNode } from "react";
+import {
+  isValidElement,
+  type ComponentPropsWithoutRef,
+  type ReactNode,
+} from "react";
 import { MarkdownAsync } from "react-markdown";
 import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 
+import { CopyCodeButton } from "@/components/copy-code-button";
 import {
   TypographyBlockquote,
   TypographyH2,
@@ -38,6 +43,45 @@ function getTextContent(node: ReactNode): string {
   }
 
   return "";
+}
+
+function getCodeText(node: ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") {
+    return String(node);
+  }
+
+  if (Array.isArray(node)) {
+    return node.map((child) => getCodeText(child)).join("");
+  }
+
+  if (isValidElement<{ children?: ReactNode; className?: string }>(node)) {
+    const text = getCodeText(node.props.children);
+
+    if (node.props.className?.split(" ").includes("line")) {
+      return `${text}\n`;
+    }
+
+    return text;
+  }
+
+  return "";
+}
+
+function formatLanguageLabel(language: string) {
+  const labels: Record<string, string> = {
+    bash: "Shell",
+    css: "CSS",
+    html: "HTML",
+    js: "JavaScript",
+    json: "JSON",
+    plaintext: "Text",
+    sh: "Shell",
+    ts: "TypeScript",
+    tsx: "TSX",
+    txt: "Text",
+  };
+
+  return labels[language] ?? language.toUpperCase();
 }
 
 export async function MarkdownRenderer({ content }: { content: string }) {
@@ -116,18 +160,58 @@ export async function MarkdownRenderer({ content }: { content: string }) {
               {...props}
             />
           ),
-          pre: ({ className, ...props }) => (
-            <pre
-              className={cn(
-                "my-8 overflow-x-auto rounded-2xl border border-border/90 bg-[#fafafa] px-4 py-3.5 text-[0.94rem] leading-7 text-foreground shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
-                className
-              )}
-              {...props}
-            />
-          ),
+          pre: ({ className, children, ...props }) => {
+            const preProps = props as typeof props & {
+              "data-language"?: unknown;
+            };
+            const language =
+              typeof preProps["data-language"] === "string"
+                ? preProps["data-language"]
+                : "";
+            const code = getCodeText(children).replace(/\n$/, "");
+
+            if (language) {
+              return (
+                <div className="docs-code-block" data-language={language}>
+                  <div className="docs-code-header">
+                    <span className="docs-code-language">
+                      {formatLanguageLabel(language)}
+                    </span>
+                    <CopyCodeButton code={code} />
+                  </div>
+                  <pre
+                    className={cn("docs-code-pre", className)}
+                    {...props}
+                  >
+                    {children}
+                  </pre>
+                </div>
+              );
+            }
+
+            return (
+              <pre
+                className={cn(
+                  "my-8 overflow-x-auto rounded-lg border border-border/90 bg-[#fafafa] px-4 py-3.5 text-[0.94rem] leading-7 text-foreground shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
+                  className
+                )}
+                {...props}
+              >
+                {children}
+              </pre>
+            );
+          },
           code: ({ className, children, ...props }) => {
             const textContent = getTextContent(children);
-            const isBlock = Boolean(className) || textContent.includes("\n");
+            const codeProps = props as typeof props & {
+              "data-language"?: unknown;
+              "data-theme"?: unknown;
+            };
+            const isBlock =
+              Boolean(className) ||
+              textContent.includes("\n") ||
+              typeof codeProps["data-language"] === "string" ||
+              typeof codeProps["data-theme"] === "string";
 
             if (!isBlock) {
               return <TypographyInlineCode {...props}>{children}</TypographyInlineCode>;

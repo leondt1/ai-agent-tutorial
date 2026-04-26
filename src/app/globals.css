@@ -159,19 +159,36 @@
 
 .docs-prose figure[data-rehype-pretty-code-figure] {
   margin-block: calc(var(--spacing) * 8);
-  display: block;
   overflow: hidden;
   border: 1px solid color-mix(in oklab, var(--border) 90%, transparent);
-  border-radius: calc(var(--radius) * 1.8);
+  border-radius: calc(var(--radius) * 1.1);
   background: #fafafa;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
-.docs-prose figure[data-rehype-pretty-code-figure] pre {
+.docs-code-header {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
+  padding-inline: 1rem;
+}
+
+.docs-code-language {
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+}
+
+.docs-prose figure[data-rehype-pretty-code-figure] .docs-code-pre {
   margin: 0;
   overflow-x: auto;
   background: transparent;
-  padding: 0.875rem 1rem;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 1.25rem 1.5rem;
 }
 
 .docs-prose figure[data-rehype-pretty-code-figure] code {
@@ -184,23 +201,30 @@
   counter-reset: line;
 }
 
-.docs-prose figure[data-rehype-pretty-code-figure] pre[data-language]::before {
-  content: attr(data-language);
+.docs-code-block[data-language="txt"] .docs-code-pre,
+.docs-code-block[data-language="plaintext"] .docs-code-pre {
+  overflow-x: hidden;
+  white-space: pre-wrap;
+}
+
+.docs-code-block[data-language="txt"] code,
+.docs-code-block[data-language="plaintext"] code {
   display: block;
-  border-bottom: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
-  background: rgba(255, 255, 255, 0.7);
-  padding: 0.5rem 1rem;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .docs-prose figure[data-rehype-pretty-code-figure] .line {
   display: inline-block;
   min-height: 1.75rem;
   width: 100%;
+}
+
+.docs-code-block[data-language="txt"] .line,
+.docs-code-block[data-language="plaintext"] .line {
+  display: block;
+  width: auto;
+  white-space: pre-wrap;
 }
 
 .docs-prose figure[data-rehype-pretty-code-figure] code[data-theme] {

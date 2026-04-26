@@ -15,7 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    // Browser extensions can inject attributes on <html> before React hydrates.
+    <html lang="zh-CN" suppressHydrationWarning>
       <body className="antialiased">{children}</body>
     </html>
   );
