@@ -1,5 +1,5 @@
 ---
-title: Plan-and-Execute，从反应式到规划式
+title: Plan-and-Execute，从边做边看到先计划再执行
 section: execution
 sectionTitle: 让 Agent 学会行动与规划
 sectionColor: "#4f7cff"
@@ -84,20 +84,11 @@ Agent 需要：
 - 记录每个模式的依据
 - 最后把它们放到一起对比
 
-如果仍然只靠 ReAct，模型很容易遇到三个问题。
+如果仍然只靠 ReAct，模型很容易遇到三个问题：
 
-第一，容易局部最优。
-
-模型刚读完 ReAct 章节，就可能急着总结 ReAct，而忘了还要看 Tool Calling、Agent Loop 和 Plan-and-Execute。
-
-第二，容易重复搜索。
-
-如果模型没有显式记录“哪些资料已经读过”，后面可能再次搜索同一类关键词，或者反复读取同一篇资料。
-
-第三，长链路状态更难维护。
-
-短任务里，模型可以靠消息历史记住刚刚发生了什么。
-长任务里，消息历史会越来越长，真正重要的状态反而可能被淹没。
+- 容易局部最优：刚读完 ReAct 章节，就急着总结 ReAct，忘了还要看 Tool Calling、Agent Loop 和 Plan-and-Execute。
+- 容易重复搜索：没有显式记录“哪些资料已经读过”，后面可能再次搜索同一类关键词，或者反复读取同一篇资料。
+- 长链路状态更难维护：短任务里，模型可以靠消息历史记住刚刚发生了什么；长任务里，真正重要的状态反而可能被越来越长的消息历史淹没。
 
 所以 Plan-and-Execute 要解决的不是“模型不会推理”，而是：
 
@@ -123,7 +114,11 @@ Replanner 更新计划
 
 和 ReAct 对比，可以先记住一句话：
 
-> ReAct 是边走边看，Plan-and-Execute 是先拆再做。
+> ReAct 是边做边看，Plan-and-Execute 是先计划再执行。
+
+这里的“边做边看”指的是：模型每一轮先根据当前 observation 选择一个 action，执行后再看新的 observation，然后决定下一步。
+
+这里的“先计划再执行”指的是：模型先把目标拆成一份显式计划，executor 每次只执行计划中的当前步骤，replanner 再根据 observation 更新计划。
 
 这里的“先拆”不代表计划一开始就必须完美。
 
@@ -248,7 +243,7 @@ const tutorialNotes = [
   },
   {
     path: "content/tutorials/p2-05-plan-and-execute.md",
-    title: "Plan-and-Execute，从反应式到规划式",
+    title: "Plan-and-Execute，从边做边看到先计划再执行",
     summary: "Plan-and-Execute 先把长任务拆成计划，再逐步执行和重规划。",
   },
 ];

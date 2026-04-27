@@ -1,6 +1,6 @@
 # 05 - Plan and Execute
 
-本目录对应教程第 05 章《Plan-and-Execute，从反应式到规划式》。
+本目录对应教程第 05 章《Plan-and-Execute，从边做边看到先计划再执行》。
 
 本章的示例代码：
 
