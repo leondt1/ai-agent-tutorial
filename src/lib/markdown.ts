@@ -40,9 +40,20 @@ export function createHeadingIdFactory() {
 export function extractMarkdownHeadings(content: string): MarkdownHeading[] {
   const createHeadingId = createHeadingIdFactory();
   const headings: MarkdownHeading[] = [];
+  let insideFence = false;
 
   for (const rawLine of content.split("\n")) {
     const line = rawLine.trim();
+
+    if (/^(```|~~~)/.test(line)) {
+      insideFence = !insideFence;
+      continue;
+    }
+
+    if (insideFence) {
+      continue;
+    }
+
     const match = /^(##|###)\s+(.+)$/.exec(line);
 
     if (!match) {
