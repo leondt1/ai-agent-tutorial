@@ -42,6 +42,16 @@ For tool-calling examples:
 - Only after that should the code introduce ideas like better tool schemas, validation, registry patterns, or reusable execution structure.
 - In early examples, it is acceptable to write the interaction flow directly instead of building a general agent loop.
 
+## Tutorial Writing Rules
+
+When editing tutorial prose under `content/tutorials/`:
+
+- Write for the reader who is following the chapter, not for the author explaining why the chapter was written that way.
+- Avoid meta-writing like "the teaching benefit is", "let readers see", or "this chapter wants to show" when a direct explanation would work.
+- Prefer learner-facing transitions that connect the current concept to the next step in the code.
+- Explain tradeoffs in terms of what the reader can observe in the example and how it affects the agent behavior.
+- When introducing a new AI, agent, or retrieval concept, add a brief first-use explanation before relying on the term in code or prose.
+
 ## Documentation Sync
 
 When changing tutorial example structure or teaching flow:

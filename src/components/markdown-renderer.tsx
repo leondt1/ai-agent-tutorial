@@ -8,6 +8,7 @@ import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 
 import { CopyCodeButton } from "@/components/copy-code-button";
+import { MermaidDiagram } from "@/components/mermaid-diagram";
 import {
   TypographyBlockquote,
   TypographyH2,
@@ -169,6 +170,10 @@ export async function MarkdownRenderer({ content }: { content: string }) {
                 ? preProps["data-language"]
                 : "";
             const code = getCodeText(children).replace(/\n$/, "");
+
+            if (language === "mermaid") {
+              return <MermaidDiagram chart={code} />;
+            }
 
             if (language) {
               return (

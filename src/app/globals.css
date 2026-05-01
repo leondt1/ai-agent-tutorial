@@ -214,6 +214,38 @@
   overflow-wrap: anywhere;
 }
 
+.docs-mermaid {
+  margin-block: calc(var(--spacing) * 8);
+  overflow-x: auto;
+  border: 1px solid color-mix(in oklab, var(--border) 90%, transparent);
+  border-radius: calc(var(--radius) * 1.1);
+  background: #fafafa;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.docs-mermaid-svg {
+  min-width: max-content;
+}
+
+.docs-mermaid svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.docs-mermaid-loading,
+.docs-mermaid-error {
+  color: var(--muted-foreground);
+  font-size: 0.95rem;
+}
+
+.docs-mermaid-error pre {
+  margin-top: 1rem;
+  white-space: pre-wrap;
+}
+
 .docs-prose figure[data-rehype-pretty-code-figure] .line {
   display: inline-block;
   min-height: 1.75rem;
