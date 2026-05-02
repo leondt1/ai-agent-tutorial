@@ -8,10 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "example": "tsx",
-    "example:typecheck": "tsc --noEmit -p"
+    "example:typecheck": "tsc --noEmit -p examples/tsconfig.json"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
+    "@modelcontextprotocol/sdk": "^1.27.1",
     "chalk": "^5.6.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
