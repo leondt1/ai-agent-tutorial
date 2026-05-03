@@ -170,14 +170,8 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
         </main>
 
         <aside className="hidden xl:block">
-          <div className="sticky top-20 px-5 py-8">
-            <TableOfContents headings={tutorial.headings} />
-            <div className="mt-8 border-t border-border/80 pt-5 text-sm text-muted-foreground">
-              <p className="font-medium text-foreground">{tutorial.tag}</p>
-              <p className="mt-2 text-[13px] leading-6">
-                当前页面基于 Markdown 生成，支持通过标题锚点快速跳转。
-              </p>
-            </div>
+          <div className="sticky top-20 flex h-[calc(100vh-5rem)] min-h-0 px-5 py-8">
+            <TableOfContents className="min-h-0 flex-1" headings={tutorial.headings} />
           </div>
         </aside>
       </div>

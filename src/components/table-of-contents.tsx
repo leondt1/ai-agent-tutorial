@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 type TableOfContentsProps = {
   headings: MarkdownHeading[];
+  className?: string;
 };
 
 type TocNode = MarkdownHeading & {
@@ -41,7 +42,7 @@ function buildTocTree(headings: MarkdownHeading[]) {
   return nodes;
 }
 
-export function TableOfContents({ headings }: TableOfContentsProps) {
+export function TableOfContents({ headings, className }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState(headings[0]?.id ?? "");
   const tocTree = useMemo(() => buildTocTree(headings), [headings]);
 
@@ -103,11 +104,11 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
   }
 
   return (
-    <nav aria-label="On this page">
+    <nav aria-label="On this page" className={cn("flex min-h-0 flex-col", className)}>
       <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground">
         On This Page
       </p>
-      <div className="mt-3 border-l border-border/80 pl-4">
+      <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain border-l border-border/80 pl-4 pr-2">
         <ul className="space-y-2">
           {tocTree.map((node) => {
             const isActive = node.id === activeId;
