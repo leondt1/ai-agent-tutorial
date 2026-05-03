@@ -35,7 +35,7 @@ export function SidebarPane({
     }
 
     const savedScrollTop = window.sessionStorage.getItem(
-      SIDEBAR_SCROLL_STORAGE_KEY
+      SIDEBAR_SCROLL_STORAGE_KEY,
     );
 
     if (!savedScrollTop) {
@@ -55,7 +55,7 @@ export function SidebarPane({
     const handleScroll = () => {
       window.sessionStorage.setItem(
         SIDEBAR_SCROLL_STORAGE_KEY,
-        String(container.scrollTop)
+        String(container.scrollTop),
       );
     };
 
@@ -73,7 +73,7 @@ export function SidebarPane({
     if (container) {
       window.sessionStorage.setItem(
         SIDEBAR_SCROLL_STORAGE_KEY,
-        String(container.scrollTop)
+        String(container.scrollTop),
       );
     }
 
@@ -85,16 +85,6 @@ export function SidebarPane({
       ref={containerRef}
       className={cn("h-full overflow-y-auto px-3 py-4", className)}
     >
-      {showSummary && sectionTitle ? (
-        <div className="mb-4 space-y-1.5 px-2">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            {sectionTitle}
-          </p>
-          <p className="text-[13px] leading-5 text-muted-foreground">
-            浏览全部教程章节，按主题快速切换。
-          </p>
-        </div>
-      ) : null}
       <SidebarNav
         currentSlug={currentSlug}
         onNavigate={handleNavigate}

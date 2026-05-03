@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github, Menu, Search } from "lucide-react";
+import { Github, Menu } from "lucide-react";
 
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { SidebarPane } from "@/components/sidebar-pane";
@@ -16,12 +16,6 @@ import {
 } from "@/components/ui/sheet";
 import type { SidebarSection, Tutorial } from "@/lib/content";
 import { formatTutorialCode } from "@/lib/tutorial-code";
-
-const topNavItems = [
-  { label: "教程", href: "/" },
-  { label: "设计文档", href: "/tutorial/p1-01-why-agent" },
-  { label: "示例", href: "#" },
-];
 
 type TutorialPageProps = {
   tutorial: Tutorial;
@@ -64,40 +58,13 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
               <span className="flex size-6 items-center justify-center rounded-md border border-border bg-foreground text-background">
                 <span className="text-[10px] font-semibold">AI</span>
               </span>
-              <span className="truncate text-[15px] font-semibold tracking-[-0.02em] text-foreground">
-                Learn AI Agent
+              <span className="truncate text-[15px] font-semibold text-foreground">
+                前端工程师的 AI Agent 实战指南：TypeScript 版
               </span>
             </Link>
           </div>
 
-          <nav className="hidden items-center gap-5 text-[14px] text-muted-foreground md:flex">
-            {topNavItems.map((item) => {
-              const isActive = item.label === "教程";
-
-              return (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className={isActive ? "font-medium text-primary" : "hover:text-foreground"}
-                >
-                  {item.label}
-                </a>
-              );
-            })}
-          </nav>
-
           <div className="ml-auto flex items-center gap-2">
-            <button
-              type="button"
-              className="hidden h-9 items-center gap-2 rounded-lg border border-border bg-muted/35 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted/60 md:inline-flex"
-            >
-              <Search className="size-4" />
-              <span>搜索文档...</span>
-              <span className="rounded-md border border-border bg-background px-1.5 py-0.5 text-[11px] text-foreground">
-                ⌘K
-              </span>
-            </button>
-
             <Button
               variant="ghost"
               size="icon-sm"
@@ -105,7 +72,7 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
               nativeButton={false}
               render={
                 <a
-                  href="https://github.com"
+                  href="https://github.com/leondt1/AI-agent-tutorial"
                   target="_blank"
                   rel="noreferrer noopener"
                 />
@@ -146,9 +113,7 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
                 </Badge>
               </div>
 
-              <TypographyH1>
-                {tutorial.title}
-              </TypographyH1>
+              <TypographyH1>{tutorial.title}</TypographyH1>
 
               <div className="mt-5 flex flex-wrap items-center gap-2.5 text-[13px] text-muted-foreground">
                 <span>{tutorial.readingMinutes} min read</span>
@@ -171,7 +136,10 @@ export function TutorialPage({ tutorial, sections }: TutorialPageProps) {
 
         <aside className="hidden xl:block">
           <div className="sticky top-20 flex h-[calc(100vh-5rem)] min-h-0 px-5 py-8">
-            <TableOfContents className="min-h-0 flex-1" headings={tutorial.headings} />
+            <TableOfContents
+              className="min-h-0 flex-1"
+              headings={tutorial.headings}
+            />
           </div>
         </aside>
       </div>

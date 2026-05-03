@@ -3,10 +3,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Learn AI Agent",
-    template: "%s | Learn AI Agent",
+    default: "前端工程师的 AI Agent 实战指南：TypeScript 版",
+    template: "%s | 前端工程师的 AI Agent 实战指南：TypeScript 版",
   },
-  description: "一个使用 Markdown 编写、纯静态导出的技术教程网站模板。",
+  description: "面向前端工程师的 AI Agent 原理与实战教程。",
 };
 
 export default function RootLayout({
