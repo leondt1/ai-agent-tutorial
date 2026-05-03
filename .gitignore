@@ -20,6 +20,7 @@
 # production
 /build
 examples/**/dist
+examples/10-build-an-agent/generated/
 
 # misc
 .DS_Store

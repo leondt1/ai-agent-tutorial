@@ -721,4 +721,4 @@ Skill 的价值不是让 Agent 看见更多文字。
 
 下一章不再引入新概念。
 
-我们会把 Loop、Tool、Planning、Context、RAG、MCP、Skill 放进同一个运行链路里，组装一个真正可用的 TypeScript Agent。
+我们会把前面学过的能力按任务需要组装起来，做一个真正可用的 code agent。
